@@ -1,0 +1,38 @@
+#image: node:10.15.0-stretch  
+image: ebiven/vue-cli
+
+stages:
+  # - test
+  - build
+  - deploy
+
+before_script:
+  #
+  
+
+.step-test:
+  stage: test
+  script:    
+    # - npm install -g @vue/cli@latest    
+    - npm install    
+    - npm run test:unit  
+
+step-build-prod:
+  stage: build
+  script:    
+    # - npm install -g @vue/cli@latest    
+    - npm install    
+    - npm run build  
+  artifacts:    
+    paths:      
+        - dist/    
+    expire_in: 1 hour
+
+deploy to staging:
+  stage: deploy
+  script:
+    - apt-get update -qy
+    - apt-get install -y lftp
+    - lftp -e "open bimilk-game.piksel.mk; user $FTP_USERNAME $FTP_PASSWORD; set ftp:ssl-allow no; mirror -X .* -X .*/ --reverse --verbose --delete ./dist /igraj; bye"
+      
+    
